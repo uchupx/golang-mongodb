@@ -1,0 +1,17 @@
+{
+    "database": {
+        "driver": "mongo",
+        "mongo": {
+            "username": "username-boongan",
+            "password": "password-boongan",
+            "host": "ini-url.boongan.gercep.mongodb.net",
+            "database": "database-boongan"
+        },
+        "mysql": {
+            "username": "username-boongan",
+            "password": "password-boongan",
+            "host": "127.0.0.1:3306",
+            "database": "database-boongan"
+        }
+    }
+}

@@ -1,0 +1,5 @@
+/.vscode
+/vendor
+
+__debug*
+_debug*

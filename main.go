@@ -1,49 +1,36 @@
 package main
 
 import (
-	"crypto/tls"
-	"net"
-	"net/http"
+	"fmt"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/uchupx/golang-mongodb/config"
+	"github.com/uchupx/golang-mongodb/transport"
 )
 
-var mongoConn *mgo.Session
-
-func createConnection() (*mgo.Session, error) {
-	dialInfo := mgo.DialInfo{
-		Addrs: []string{
-			"cluster0.mv5s7.gcp.mongodb.net"},
-		Username: "test",
-		Password: "chapzz33",
-	}
-	tlsConfig := &tls.Config{}
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		return conn, err
-	}
-
-	return mgo.DialWithInfo(&dialInfo)
-}
-
-type MyEntity struct {
-	Data []byte `json:"data" bson:"data"`
-}
-
 func main() {
-	var err error
-	mongoConn, err = createConnection()
+	conf, err := config.ReadingConf()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
+
+	// mongoConn
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
 	router := gin.Default()
 
-	router.GET("/someGet", get)
-	// router.POST("/somePost", posting)
+	// conn, err := config.ConnectionMongo(conf)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	trans := transport.TransportHandler{}
+
+	userHandler := trans.NewUserRequest(conf)
+
+	router.GET("/user", userHandler.FindAll)
+	router.POST("/user", userHandler.Insert)
 	// router.PUT("/somePut", putting)
 	// router.DELETE("/someDelete", deleting)
 	// router.PATCH("/somePatch", patching)
@@ -54,17 +41,4 @@ func main() {
 	// PORT environment variable was defined.
 	// router.Run()
 	router.Run(":3000")
-}
-
-func get(c *gin.Context) {
-	session := mongoConn.Copy()
-	defer session.Close()
-
-	entity := MyEntity{}
-	err := session.DB("test").C("data").Find(bson.M{}).One(&entity)
-	if err != nil {
-		panic(err)
-	}
-
-	c.JSON(http.StatusOK, entity)
 }
