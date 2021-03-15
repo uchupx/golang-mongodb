@@ -41,9 +41,14 @@ func (m userModel) FindAll(ctx context.Context) ([]User, error) {
 	return results, nil
 }
 
-func (m userModel) Insert(ctx context.Context, users []User) error {
-	if len(users) == 1 {
-		insertResult, err := m.collection.InsertOne(ctx, users[0])
+func (m userModel) Insert(ctx context.Context, user User) error {
+	count, err := m.collection.CountDocuments(ctx, bson.M{"username": user.Username})
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		insertResult, err := m.collection.InsertOne(ctx, user)
 		if err != nil {
 			return err
 		}
@@ -51,8 +56,9 @@ func (m userModel) Insert(ctx context.Context, users []User) error {
 		fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 		return nil
 	} else {
-		return nil
+		return fmt.Errorf("Username is exist")
 	}
+
 }
 
 func NewUserModel(db *mongo.Database) *userModel {

@@ -1,4 +1,4 @@
-package request
+package reqres
 
 import (
 	"net/http"
@@ -34,6 +34,7 @@ func (r UserRequest) Insert(c *gin.Context) {
 	err := c.ShouldBind(&userReq)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 	userSche := user.User{
@@ -43,9 +44,15 @@ func (r UserRequest) Insert(c *gin.Context) {
 		Nama:     *userReq.Nama,
 	}
 
-	err = r.UserRepo.Insert(c, []user.User{userSche})
+	err = r.UserRepo.Insert(c, userSche)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		er := ErrorMessage{
+			StatusCode: http.StatusBadRequest,
+			Error:      err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, er)
+		return
+
 	}
 
 	c.JSON(http.StatusCreated, "ok")

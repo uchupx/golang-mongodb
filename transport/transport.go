@@ -3,7 +3,7 @@ package transport
 import (
 	"github.com/uchupx/golang-mongodb/config"
 	"github.com/uchupx/golang-mongodb/model/user"
-	request "github.com/uchupx/golang-mongodb/transport/reqres"
+	"github.com/uchupx/golang-mongodb/transport/reqres"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -11,12 +11,12 @@ type TransportHandler struct {
 	mongoConn *mongo.Database
 	userRepo  user.UserRepo
 
-	userRequest *request.UserRequest
+	userRequest *reqres.UserRequest
 }
 
-func (t TransportHandler) NewUserRequest(conf *config.Config) *request.UserRequest {
+func (t TransportHandler) NewUserRequest(conf *config.Config) *reqres.UserRequest {
 	if t.userRequest == nil {
-		userReq := request.UserRequest{
+		userReq := reqres.UserRequest{
 			UserRepo: t.newUserRepo(conf),
 		}
 
