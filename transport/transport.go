@@ -2,6 +2,7 @@ package transport
 
 import (
 	"github.com/uchupx/golang-mongodb/config"
+	"github.com/uchupx/golang-mongodb/model/history"
 	"github.com/uchupx/golang-mongodb/model/user"
 	"github.com/uchupx/golang-mongodb/transport/reqres"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,7 +10,9 @@ import (
 
 type TransportHandler struct {
 	mongoConn *mongo.Database
-	userRepo  user.UserRepo
+
+	userRepo    user.UserRepo
+	historyRepo history.HistoryRepo
 
 	userRequest *reqres.UserRequest
 }
@@ -32,6 +35,15 @@ func (t TransportHandler) newUserRepo(conf *config.Config) user.UserRepo {
 	}
 
 	return t.userRepo
+}
+
+func (t TransportHandler) newHistoryRepo(conf *config.Config) history.HistoryRepo {
+	if t.historyRepo == nil {
+		historyConn := history.NewHistoryModel(t.NewMongoConn(conf))
+		t.historyRepo = historyConn
+	}
+
+	return t.historyRepo
 }
 
 func (t TransportHandler) NewMongoConn(conf *config.Config) *mongo.Database {

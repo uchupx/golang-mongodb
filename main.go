@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/uchupx/golang-mongodb/config"
 	"github.com/uchupx/golang-mongodb/transport"
 )
@@ -16,29 +16,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	// mongoConn
-	// Creates a gin router with default middleware:
-	// logger and recovery (crash-free) middleware
-	router := gin.Default()
-
-	// conn, err := config.ConnectionMongo(conf)
-	// if err != nil {
-	// 	panic(err)
-	// }
 	trans := transport.TransportHandler{}
 
 	userHandler := trans.NewUserRequest(conf)
+	// historyHandler := trans.NewUserRequest(conf)
 
-	router.GET("/user", userHandler.FindAll)
-	router.POST("/user", userHandler.Insert)
-	// router.PUT("/somePut", putting)
-	// router.DELETE("/someDelete", deleting)
-	// router.PATCH("/somePatch", patching)
-	// router.HEAD("/someHead", head)
-	// router.OPTIONS("/someOptions", options)
+	http.HandleFunc("/user", userHandler.Users)
+	// http.HandleFunc("/history", userHandler.Insert)
+	// http.HandleFunc("/history", userHandler.Insert)
 
-	// By default it serves on :8080 unless a
-	// PORT environment variable was defined.
-	// router.Run()
-	router.Run(":3000")
+	http.ListenAndServe(":3000", nil)
 }

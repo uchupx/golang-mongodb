@@ -58,7 +58,6 @@ func (m userModel) Insert(ctx context.Context, user User) error {
 	} else {
 		return fmt.Errorf("Username is exist")
 	}
-
 }
 
 func NewUserModel(db *mongo.Database) *userModel {
