@@ -66,7 +66,7 @@ func ReadingConf() (*Config, error) {
 func ConnectionMongo(conf *Config) (*mongo.Database, error) {
 	ctx := context.TODO()
 	mongoURI := fmt.Sprintf("mongodb+srv://%s:%s@%s", conf.Database.Mongo.Username, conf.Database.Mongo.Password, conf.Database.Mongo.Host)
-	fmt.Println("connecting to", conf.Database.Mongo.Host)
+	// fmt.Println("connecting to", conf.Database.Mongo.Host)
 
 	clientOptions := options.Client().ApplyURI(mongoURI)
 	client, err := mongo.Connect(ctx, clientOptions)
